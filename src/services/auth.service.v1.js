@@ -5,12 +5,12 @@ import { Usuario } from "../modelos/user.model.js"
 
 
 
-const doLogin = async ({ emailU, pass }) => {
-     const u = await Usuario.findOne({ email: emailU }) // query de busqueda
-
+const doLogin = async ({ email, password }) => {
+     const u = await Usuario.findOne({ email: email }) // query de busqueda
+     console.log(email, password);
     if (u) {
         //bcrypt.compare --> true/false
-        const esValida = await bcrypt.compare(pass, u.contrasena)
+        const esValida = await bcrypt.compare(password, u.password)
         if (esValida) {
             //crar el token jwt
             const token = jwt.sign(
@@ -28,7 +28,7 @@ const doLogin = async ({ emailU, pass }) => {
 
 const registrarUsuario = async ({ nombre, apellido, password, email }) => {
 
-    const contraHasheada = await bcrypt.hash(contrasena, 10);
+    const contraHasheada = await bcrypt.hash(password, 10);
 
     console.log(contraHasheada);
     const nuevoUsuario = {
@@ -40,16 +40,23 @@ const registrarUsuario = async ({ nombre, apellido, password, email }) => {
         plan: "plus"
     }
     //usuarios.push(nuevoUsuario);
-    const usuarioGuardado = await Usuario.create(nuevoUsuario);
-    if (usuarioGuardado) {
+    const u = await Usuario.create(nuevoUsuario);
     const token = jwt.sign(
                 { idUsu: u.id, rolUsu: u.rol, planUsu: u.plan },
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: "1h" }
             )
-    return token;
-    }
-        throw new Error("Error al registrar usuario");
+    return { token };
+
+    //const usuarioDTO = usuarioDto(usuarioGuardado)
+    
+    //jwt.sign
+    //nuevoUsuario.token = 
+    //return usuarioDTO;
 }
+   
+
 
 export { doLogin, registrarUsuario }
+
+ 
