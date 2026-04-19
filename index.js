@@ -6,6 +6,8 @@ import { authMiddleware } from './src/middlewares/auth.middleware.js';
 import { logMiddleware } from './src/middlewares/logger.middleware.js';
 import { authRouter } from './src/routes/auth.router.v1.js';
 import { salaRouterV1 } from './src/routes/sala.router.v1.js';
+import { claseRouterV1 } from './src/routes/clase.router.v1.js';
+
 
 
 
@@ -25,6 +27,8 @@ app.use("/v1", authRouter)
 app.use(authMiddleware)
 //Salas Router:
 app.use("/v1", salaRouterV1)
+//Clases Router:
+app.use("/v1", claseRouterV1)
 
 conectarBD();
 

@@ -1,6 +1,6 @@
 class SalaNoEncontrada extends Error {
     constructor() {
-        super("sala no encontrada"),
+        super("Sala no encontrada"),
         this.code = 404
     }
 }

@@ -7,7 +7,7 @@ const salaRouterV1 = express.Router();
 
 salaRouterV1.post("/salas", soloAdminMiddleware, crearSalaValidatorSchemaMiddleware, crearSalaController);
 salaRouterV1.get("/salas", soloAdminMiddleware ,obtenerSalas )
-salaRouterV1.get("/salas/:id", soloAdminMiddleware, obtenerSalaPorSuId )
+salaRouterV1.get("/salas/:id", soloAdminMiddleware, crearSalaValidatorSchemaMiddleware ,obtenerSalaPorSuId )
 salaRouterV1.put("/salas/:id", soloAdminMiddleware, modificarSala )
 
 export { salaRouterV1 }

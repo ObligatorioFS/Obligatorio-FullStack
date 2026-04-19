@@ -1,0 +1,8 @@
+class UsuarioNoEncontrado extends Error {
+    constructor() {
+        super("Usuario no encontrado"),
+        this.code = 404;
+    }
+}
+
+export { UsuarioNoEncontrado }
