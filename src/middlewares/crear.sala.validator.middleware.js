@@ -1,4 +1,4 @@
-import { crearSalaValidatorSchema } from "../validators/crear.sala.validator.js";
+import { crearSalaValidatorSchema } from "../validators/crear.sala.validator.v1.js";
 
 const crearSalaValidatorSchemaMiddleware = (req, res, next) => {
     const { error } = crearSalaValidatorSchema.validate(req.body)

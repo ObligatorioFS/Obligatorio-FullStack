@@ -1,4 +1,4 @@
-import { SalaNoEncontrada } from "../errors/SalaNoEncontradaError.js";
+import { SalaNoEncontrada } from "../errors/salaErrors/SalaNoEncontradaError.js";
 import { Sala } from "../modelos/sala.model.js";
 
 
