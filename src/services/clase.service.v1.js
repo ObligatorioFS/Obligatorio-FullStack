@@ -3,12 +3,12 @@ import { ClaseNoEncontrada } from "../errors/claseErrors/ClaseNoEncontradaError.
 import { ClaseYaExisteError } from "../errors/claseErrors/ClaseYaExisteError.js";
 import { CuposLlenosError } from "../errors/claseErrors/CuposLlenosError.js";
 import { SalaNoEncontrada } from "../errors/salaErrors/SalaNoEncontradaError.js";
-import { PlanPlusError } from "../errors/usuarioErrors/PlanPlusError.js";
 import { UsuarioNoEncontrado } from "../errors/usuarioErrors/UsuarioNoEncontrado.js";
 import { YaInscriptoError } from "../errors/usuarioErrors/UsuarioYaInscriptoError.js";
 import { Clase } from "../modelos/clase.model.js";
 import { Sala } from "../modelos/sala.model.js";
 import { Usuario } from "../modelos/user.model.js";
+import { validarLimiteClasesPlanPlus } from "./validations.service.v1.js";
 
 
 //Crear Clase
@@ -108,12 +108,8 @@ const validarInscripcion = async (idClase, idUsuario) => {
         throw new CuposLlenosError();
     }
 
-    if (usuario.plan === "plus") {
-        const cantidadClases = await Clase.countDocuments({ inscriptos: idUsuario });
-        if (cantidadClases >= 4) {
-            throw new PlanPlusError();
-        }
-    }
+    // Validar límite de clases para usuarios con plan plus
+    await validarLimiteClasesPlanPlus(idUsuario);
     
     return { usuario, clase };
 }
