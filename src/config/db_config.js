@@ -13,8 +13,4 @@ const conectarBD = async () => {
         process.exit(1);
     }
 }
-// mongodb+srv://FeliAdmin:Feli1234@cluster-club.ybdvjro.mongodb.net/
-// mongodb+srv://FeliAdmin:Feli1234@cluster-club.ybdvjro.mongodb.net/
-// mongodb+srv://LucasAdmin:Lukitas.1170!@cluster-club.ybdvjro.mongodb.net/
-// El del profe: mongodb+srv://${usuario}:${password}@cluster-nota-api.1q7nkjl.mongodb.net/${nombreBase}?appName=cluster-nota-api
 export { conectarBD }
