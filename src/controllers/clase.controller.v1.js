@@ -1,5 +1,6 @@
 import * as claseService from "../services/clase.service.v1.js"
 
+
 //Crear Clase
 const crearClase = async (req, res) => {
     try {
@@ -48,7 +49,9 @@ const inscribirUsuario = async (req, res) => {
     const idUsuario = req.idUsu;
     try {
         const claseConInscripcion = await claseService.inscribirUsuario(idClase, idUsuario)
+        const email = await claseService.mandarMail(idUsuario, idClase);
         res.status(200).json(claseConInscripcion);
+
     } catch (e) {
         res.status(e.code || 500).json({ message: e.message })
     }
@@ -66,4 +69,29 @@ const removerUsuarioDeInscriptos = async (req, res) => {
     }
 }
 
-export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos }
+//Limpiar Inscriptos de Clases por Dia
+const limpiarUsuarioDeClasesPorDia= async(req, res) =>{
+    const dia = req.body;
+    try {
+        const claseLimpiada = await claseService.limpiarUsuarioDeClasesPorDia(dia)
+        res.status(200).json(claseLimpiada)
+    } catch (e) {
+        res.status(500).json({ message: e.message })
+    }
+}
+
+
+//Mandar Mail
+/*const mandarEmail = async(req,res)=> {
+    const idClase = req.params.idClase
+    const idUsuario = req.idUsu;
+    try {
+        const email = await claseService.mandarMail(idClase,idUsuario);
+        res.status(200).json(email)
+    } catch (e) {
+        res.status(500).json({ message: e.message })
+    }
+
+}*/
+
+export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, /*mandarEmail*/ }

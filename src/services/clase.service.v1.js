@@ -9,6 +9,8 @@ import { Clase } from "../modelos/clase.model.js";
 import { Sala } from "../modelos/sala.model.js";
 import { Usuario } from "../modelos/user.model.js";
 import { validarLimiteClasesPlanPlus } from "./validations.service.v1.js";
+import  'dotenv/config' ; 
+import  {  MailerSend ,  EmailParams ,  Sender ,  Recipient  }  from  "mailersend" ;
 
 
 //Crear Clase
@@ -150,4 +152,61 @@ const validarRemoverInscripcion = async (idClase, idUsuario) => {
     return { clase };
 }
 
-export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos}
+//Limpiar Inscriptos de las Clases de un dia
+const limpiarUsuarioDeClasesPorDia = async (dia) => {
+    //buscarclases
+    const clases = await Clase.findByd();
+    
+
+    
+    
+    return { clase };
+}
+
+
+//Mandar Mail
+const mandarMail = async (idUsuario, idClase) => {
+    try {
+        const clase = await Clase.findById(idClase);
+        const usuario = await Usuario.findById(idUsuario);
+        
+        if (!usuario) {
+            throw new UsuarioNoEncontrado();
+        }
+        if (!clase) {
+            throw new ClaseNoEncontrada();
+        }
+        
+        const mailerSend = new MailerSend({   
+            apiKey: process.env.MAIL_SENDER_API_KEY
+        });
+        
+        const sentFrom = new Sender("noreply@test-zkq340ervr3gd796.mlsender.net", "Felipe Rossini");
+        
+        const destinatarios = [
+            new Recipient(usuario.email, usuario.nombre)
+        ];
+        
+        const emailParams = new EmailParams()
+            .setFrom(sentFrom)
+            .setTo(destinatarios) 
+            .setReplyTo(sentFrom)
+            .setSubject("Inscripción exitosa!")
+            .setHtml(`
+                <h2>¡Hola ${usuario.nombre}!</h2>
+                <p>Te confirmamos que te inscribiste correctamente a la clase:</p>
+                <p><strong>${clase.nombre}</strong></p>
+                <p>¡Te esperamos! 💪</p>
+            `)
+            .setText(
+                `Hola ${usuario.nombre}, te inscribiste correctamente a la clase ${clase.nombre}.`
+            );
+        
+        const resultado = await mailerSend.email.send(emailParams);
+        return resultado;
+    } catch (error) {
+        console.error("Error al enviar email:", error);
+        throw error;
+    }
+}
+export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, mandarMail}
