@@ -16,7 +16,7 @@ import  {  MailerSend ,  EmailParams ,  Sender ,  Recipient  }  from  "mailersen
 //Crear Clase
 const crearClase = async ({nombre, dia, hora, capacidadMax, idSala}) => {
    
-    await validarDatosCrearClase({ dia, hora, capacidadMax, idSala });
+    await validarDatosCrearClase({dia, hora, capacidadMax, idSala });
 
     const nuevaClase ={
         nombre,
@@ -196,6 +196,7 @@ const mandarMail = async (idUsuario, idClase) => {
                 <h2>¡Hola ${usuario.nombre}!</h2>
                 <p>Te confirmamos que te inscribiste correctamente a la clase:</p>
                 <p><strong>${clase.nombre}</strong></p>
+                <p>${clase.descripcion}</p>
                 <p>¡Te esperamos! 💪</p>
             `)
             .setText(
