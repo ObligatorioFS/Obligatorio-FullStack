@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const claseSchema = new mongoose.Schema({
-    nombre: { type: String, required: true, trim: true},
     descripcion: { type: String, required: true, trim: true},
     dia:    { type: String, required: true, enum: ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"]},
     hora:   { type: String, required: true, trim: true},

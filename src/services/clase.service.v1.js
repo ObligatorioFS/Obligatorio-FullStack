@@ -1,28 +1,33 @@
+import { ActividadNoEncontradaError } from "../errors/actividadErrors/ActividadNoEncontradaError.js";
 import { CapacidadSuperadaError } from "../errors/claseErrors/CapacidadSuperadaError.js";
 import { ClaseNoEncontrada } from "../errors/claseErrors/ClaseNoEncontradaError.js";
 import { ClaseYaExisteError } from "../errors/claseErrors/ClaseYaExisteError.js";
 import { CuposLlenosError } from "../errors/claseErrors/CuposLlenosError.js";
+import { DescripcionVaciaError } from "../errors/claseErrors/DescripcionVaciaError.js";
 import { SalaNoEncontrada } from "../errors/salaErrors/SalaNoEncontradaError.js";
-import { UsuarioNoEncontrado } from "../errors/usuarioErrors/UsuarioNoEncontrado.js";
+import { UsuarioNoEncontradoError } from "../errors/usuarioErrors/UsuarioNoEncontrado.js";
 import { YaInscriptoError } from "../errors/usuarioErrors/UsuarioYaInscriptoError.js";
+import { Actividad } from "../modelos/actividad.model.js";
 import { Clase } from "../modelos/clase.model.js";
 import { Sala } from "../modelos/sala.model.js";
 import { Usuario } from "../modelos/user.model.js";
 import { validarLimiteClasesPlanPlus } from "./validations.service.v1.js";
+
 import  'dotenv/config' ; 
 import  {  MailerSend ,  EmailParams ,  Sender ,  Recipient  }  from  "mailersend" ;
 
 
 //Crear Clase
-const crearClase = async ({nombre, dia, hora, capacidadMax, idSala}) => {
-   
-    await validarDatosCrearClase({dia, hora, capacidadMax, idSala });
+const crearClase = async ({descripcion, dia, hora, capacidadMax, idSala, idActividad}) => {
+    
+    await validarDatosCrearClase({ dia, hora, capacidadMax, idSala});
 
     const nuevaClase ={
-        nombre,
+        descripcion,
         dia,
         hora,
         capacidadMax,
+        idActividad,
         idSala
     }
     const claseGuardada = await Clase.create(nuevaClase)
@@ -91,7 +96,7 @@ const validarInscripcion = async (idClase, idUsuario) => {
 
     const usuario = await Usuario.findById(idUsuario);
     if (!usuario) {
-        throw new UsuarioNoEncontrado();
+        throw new UsuarioNoEncontradoError();
     }
 
     const clase = await Clase.findById(idClase);
@@ -117,8 +122,16 @@ const validarInscripcion = async (idClase, idUsuario) => {
 }
 
 //Validacion Crear Clase
-const validarDatosCrearClase = async ({ dia, hora, capacidadMax, idSala }) => {
-   
+const validarDatosCrearClase = async ({descripcion, dia, hora, capacidadMax, idSala, idActividad }) => {
+   //Validar que la descripcion ne sea vacia o nula
+    if (!descripcion || descripcion.trim() === "") {
+        throw new DescripcionVaciaError();
+    }
+   //Busco Actividad - Si no existe, Error.
+   const actividad = await Actividad.findById(idActividad);
+    if (!actividad) {
+        throw new ActividadNoEncontradaError();
+    }
     //Busco Sala - Si no existe o la capacidad es menor, Error.
    const sala = await Sala.findById(idSala);
    if(!sala){
@@ -154,13 +167,18 @@ const validarRemoverInscripcion = async (idClase, idUsuario) => {
 
 //Limpiar Inscriptos de las Clases de un dia
 const limpiarUsuarioDeClasesPorDia = async (dia) => {
+    try {
     //buscarclases
-    const clases = await Clase.findByd();
-    
-
-    
-    
-    return { clase };
+    const clases = await Clase.find({ dia })
+    //recorrerlas y limpiar inscriptos
+    for (const clase of clases) {
+        clase.inscriptos = []; 
+        await clase.save();
+    }
+    return { clases };
+    } catch (e) {
+        throw e;
+    }
 }
 
 
@@ -169,9 +187,10 @@ const mandarMail = async (idUsuario, idClase) => {
     try {
         const clase = await Clase.findById(idClase);
         const usuario = await Usuario.findById(idUsuario);
+        //const actividad = await Actividad.findById(clase.idActividad);
         
         if (!usuario) {
-            throw new UsuarioNoEncontrado();
+            throw new UsuarioNoEncontradoError();
         }
         if (!clase) {
             throw new ClaseNoEncontrada();
@@ -195,12 +214,12 @@ const mandarMail = async (idUsuario, idClase) => {
             .setHtml(`
                 <h2>¡Hola ${usuario.nombre}!</h2>
                 <p>Te confirmamos que te inscribiste correctamente a la clase:</p>
-                <p><strong>${clase.nombre}</strong></p>
+                <p><strong>${clase.actividad.nombre}</strong></p>
                 <p>${clase.descripcion}</p>
                 <p>¡Te esperamos! 💪</p>
             `)
             .setText(
-                `Hola ${usuario.nombre}, te inscribiste correctamente a la clase ${clase.nombre}.`
+                `Hola ${usuario.nombre}, te inscribiste correctamente a la clase ${clase.actividad.nombre}.`
             );
         
         const resultado = await mailerSend.email.send(emailParams);

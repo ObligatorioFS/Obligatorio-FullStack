@@ -1,13 +1,14 @@
 import jwt from "jsonwebtoken"
 import { usuarioDto } from "../dtos/usuario.dto.js"
 import { Usuario } from "../modelos/user.model.js"
-import { UsuarioNoEncontrado } from "../errors/usuarioErrors/UsuarioNoEncontrado.js"
+import { UsuarioNoEncontradoError } from "../errors/usuarioErrors/UsuarioNoEncontrado.js"
+
 
 const modificarPlanUsuario = async (idUsuario) => {
     try {
         const usuario = await Usuario.findById(idUsuario)
         if (!usuario) {
-            throw new UsuarioNoEncontrado();
+            throw new UsuarioNoEncontradoError();
         }
         if (usuario.plan === "plus") {
             usuario.plan = "premium"
@@ -34,15 +35,3 @@ const generarToken = async (usuario) => {
 
 export { modificarPlanUsuario }
 
-
-/*const salaModificada = await Sala.findOneAndUpdate(
-        { _id: idSala},
-        body,
-        { returnDocument: "after", runValidators: true }
-    )
-
-    if (salaModificada) {
-        return salaModificada;
-    }
-
-    throw new SalaNoEncontrada();*/

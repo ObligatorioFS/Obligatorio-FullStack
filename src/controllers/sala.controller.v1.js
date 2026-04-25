@@ -6,7 +6,7 @@ const crearSalaController = async (req, res) => {
         const nuevaSala = await salasService.crearSalaService(req.body)
         res.status(201).json(nuevaSala);
     } catch (e) {
-        res.status(500).json({ message: "error al crear la nota" });
+        res.status(500).json({ message: "error al crear la sala" });
     }
 }
 
@@ -27,7 +27,6 @@ const obtenerSalaPorSuId = async (req, res) => {
         const sala = await salasService.obtenerSalaPorSuId(idSala);
         res.status(200).json(sala);
     } catch (e) {
-        console.log(e)
         res.status(e.code || 500).json({ message: e.message })
     }
 }

@@ -1,55 +1,84 @@
-import { Actividad } from "../modelos/actividad.model";
-import { Actividad } from "../errors/salaErrors/SalaNoEncontradaError.js";
+import { ActividadEnUsoError } from "../errors/actividadErrors/ActividadEnUsoError.js";
+import { ActividadNoEncontradaError } from "../errors/actividadErrors/ActividadNoEncontradaError.js";
+import { ActividadYaExisteError } from "../errors/actividadErrors/ActividadYaExisteError.js";
+import { Actividad } from "../modelos/actividad.model.js";
+import { Clase } from "../modelos/clase.model.js";
+import { Rutina } from "../modelos/rutina.model.js";
 
 
+//Crear Actividad
+const crearActividad = async ({ nombre, descripcion }) => {
+    try {
+    if (await Actividad.findOne({ nombre })) throw new ActividadYaExisteError();
 
-//Crear Sala
-const crearSalaService = async ({ nombre, capacidadMax }) => {
-    const nuevaSala = {
+    const nuevaActividad = {
         nombre,
-        capacidadMax
+        descripcion,
     }
-    const salaGuardada = await Sala.create(nuevaSala)
-    return salaGuardada;
+    const actividadGuardada = await Actividad.create(nuevaActividad)
+    return actividadGuardada;
+    }catch(e){
+        throw e;
+    }
+    
 }
 
-//Obtener Salas
-const obtenerTodasLasSalas = async () => {
+//Obtener Todas las Actividades
+const obtenerTodasLasActividades = async () => {
     try {
-        return await Sala.find({});
-    } catch (e) {
-        console.log("Error al obtener salas", e);
-        throw new Error("Error obteniendo las salas");
-    }
-}
-
-//Obtener Sala por ID
-const obtenerSalaPorSuId = async (idSala) => {
-    try {
-        const sala = await Sala.findOne({ _id: idSala})
-        if (sala) {
-            return sala
-        }
-        throw new SalaNoEncontrada();
+        const actividades = await Actividad.find();
+        return actividades;
     } catch (e) {
         throw e;
     }
-}
+};
 
-//Modificar Sala
-const modificarSala = async (idSala, body) => {
-    const salaModificada = await Sala.findOneAndUpdate(
-        { _id: idSala},
+//Obtener Actividad por ID
+const obtenerActividadPorId = async (idActividad) => {
+    try {
+        const actividad = await Actividad.findById(idActividad);
+        if (actividad){
+            return actividad;
+        }
+        throw new ActividadNoEncontradaError();
+    } catch (e) {
+        throw e;
+    }
+};
+
+//Modificar Actividad
+const modificarActividad = async ({ idActividad, body }) => {
+   try{
+      const notaModificada = await Nota.findOneAndUpdate(
+        { _id: idActividad},
         body,
         { returnDocument: "after", runValidators: true }
     )
 
-    if (salaModificada) {
-        return salaModificada;
+    if (notaModificada) {
+        return notaModificada;
     }
+       throw new ActividadNoEncontradaError();
+   }catch(e){
+    throw e;
+   }
+};
 
-    throw new SalaNoEncontrada();
-}
+//Eliminar Actividad
+const eliminarActividad = async (id) => {
+    try {
+        const enClase = await Clase.findOne({ actividadId: id });
+        const enRutina = await Rutina.findOne({ actividadId: id });
+        if (enClase || enRutina) throw new ActividadEnUsoError();
 
+        const actividadEliminada = await Actividad.findByIdAndDelete(id);
+        if (actividadEliminada){
+           return actividadEliminada;
+        }
+         throw new ActividadNoEncontradaError();
+    } catch (e) {
+        throw e;
+    }
+};
 
-export { crearSalaService, obtenerTodasLasSalas, obtenerSalaPorSuId, modificarSala }
+export { crearActividad, modificarActividad, eliminarActividad, obtenerTodasLasActividades, obtenerActividadPorId}

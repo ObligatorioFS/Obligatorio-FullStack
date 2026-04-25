@@ -31,4 +31,8 @@ const obtenerRutinaPorSuId = async (req, res) => {
     }
 }
 
+//Modificar Rutinas sin Ejercicios
+
+
+
 export { crearRutinaController, obtenerRutinas, obtenerRutinaPorSuId }

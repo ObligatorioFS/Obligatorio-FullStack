@@ -8,6 +8,8 @@ import { UsuarioYaExistenteError } from "../errors/usuarioErrors/UsuarioYaExiste
 
 const doLogin = async ({ email, password }) => {
      console.log(email, password);
+    //buscar el usuario por email
+    const u = await Usuario.findOne({ email: email })
     if (u) {
         //bcrypt.compare --> true/false
         const esValida = await bcrypt.compare(password, u.password)
