@@ -9,6 +9,7 @@ import { salaRouterV1 } from './src/routes/sala.router.v1.js';
 import { claseRouterV1 } from './src/routes/clase.router.v1.js';
 import { rutinaRouterV1 } from './src/routes/rutina.router.v1.js';
 import { usuarioRouterV1 } from './src/routes/usuario.router.v1.js';
+import { actividadRouterv1 } from './src/routes/actividad.router.v1.js';
 
 
 
@@ -35,6 +36,8 @@ app.use("/v1", claseRouterV1)
 app.use("/v1", rutinaRouterV1)
 //Usuarios Router:
 app.use("/v1", usuarioRouterV1)
+//Actividades Router:
+app.use("/v1", actividadRouterv1)
 
 conectarBD();
 
