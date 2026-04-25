@@ -1,5 +1,6 @@
 import * as usuarioService from "../services/usuario.service.v1.js"
 
+//Modificar Plan de Usuario
 const modificarPlanUsuario = async (req, res) => {
     const idUsuario = req.idUsu;
     try {

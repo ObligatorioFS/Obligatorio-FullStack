@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const rutinaSchema = new mongoose.Schema({
     ejercicios : { type: [String], trim: true},
     objetivo: { type: String, required: true, trim: true},
-    idActividad: { 
+    actividad: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Actividad",
         required: true
     },
-    idUsuario: { 
+    usuario: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: "Usuario",
         required: true

@@ -1,12 +1,12 @@
 import Joi from "joi";
 
 const crearClaseValidatorSchema = Joi.object({
-    nombre: Joi.string().min(2).max(50).required().messages({
-            "string.base": "El nombre debe ser texto",
-            "string.empty": "El nombre es obligatorio",
-            "string.min": "El nombre debe tener al menos 2 caracteres",
-            "string.max": "El nombre no puede superar 50 caracteres",
-            "any.required": "El nombre es obligatorio"
+    descripcion: Joi.string().min(2).max(100).required().messages({
+            "string.base": "La descripcion debe ser texto",
+            "string.empty": "La descripcion es obligatoria",
+            "string.min": "La descripcion debe tener al menos 2 caracteres",
+            "string.max": "La descripcion no puede superar 100 caracteres",
+            "any.required": "La descripcion es obligatoria"
         }),
 
     dia: Joi.string().valid("lunes", "martes", "miercoles", "jueves", "viernes", "sabado").required().messages({
@@ -28,7 +28,12 @@ const crearClaseValidatorSchema = Joi.object({
             "any.required": "La capacidad es obligatoria"
         }),
 
-    idSala: Joi.string().required().messages({
+    actividad: Joi.string().required().messages({
+            "string.empty": "El id de la actividad es obligatorio",
+            "any.required": "El id de la actividad es obligatorio"
+        }),
+
+    sala: Joi.string().required().messages({
             "string.empty": "El id de la sala es obligatorio",
             "any.required": "El id de la sala es obligatorio"
         })

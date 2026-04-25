@@ -20,6 +20,18 @@ const obtenerRutinas = async (req, res) => {
     }
 }
 
+//Obtener Rutinas por UsuarioId
+const obtenerRutinasPorUsuario = async (req, res) => {
+    const idUsuario = req.idUsu;
+    try {
+        const rutinas = await rutinaService.obtenerRutinasPorUsuario(idUsuario)
+        res.status(200).json(rutinas)
+    } catch (e) {
+        res.status(500).json({ message: e.message })
+    }
+}
+
+
 //Obtener Rutina por su ID
 const obtenerRutinaPorSuId = async (req, res) => {
     const idRutina = req.params.id
@@ -31,8 +43,6 @@ const obtenerRutinaPorSuId = async (req, res) => {
     }
 }
 
-//Modificar Rutinas sin Ejercicios
 
 
-
-export { crearRutinaController, obtenerRutinas, obtenerRutinaPorSuId }
+export { crearRutinaController, obtenerRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario }

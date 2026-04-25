@@ -2,40 +2,47 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Rutina } from "../modelos/rutina.model.js";
 import { validarLimiteRutinasPlanPlus } from "./validations.service.v1.js";
 import { Actividad } from "../modelos/actividad.model.js";
+import { Usuario } from "../modelos/user.model.js";
 import { ActividadNoEncontradaError } from "../errors/actividadErrors/ActividadNoEncontradaError.js";
 import { UsuarioNoEncontradoError } from "../errors/usuarioErrors/UsuarioNoEncontrado.js";
+import { RutinaNoEncontrada } from "../errors/rutinaErrors/RutinaNoEncontradaError.js";
 
 
 //Crear Rutina
-const crearRutinaService = async ({ idActividad, objetivo }, idUsuario) => {
+const crearRutinaService = async ({ actividad, objetivo }, idUsuario) => {
     // Validar límite de rutinas para usuarios con plan plus
+    const usuario = await Usuario.findById(idUsuario);
+    if (!usuario) {
+        throw new UsuarioNoEncontradoError();
+    }
     await validarLimiteRutinasPlanPlus(idUsuario);
     // Verificar que la actividad exista
-    const a = Actividad.findById(idActividad);
+    const a = await Actividad.findById(actividad);
     if (!a) {
         throw new ActividadNoEncontradaError();
     }
     let ejercicios = [];
-    // Generar ejercicios utilizando IA
-    ejercicios = await generarRutinaConIA(idActividad, objetivo);
+    try {
+    ejercicios = await generarRutinaConIA(actividad, objetivo);
+    } catch (e) {
+     ejercicios = ["El Administrador tiene que generar esta rutina manualmente"];
+    }
 
     const nuevaRutina = {
-            ejercicios,
-            idActividad,
-            objetivo,
-            idUsuario
-        };
-        const rutinaGuardada = await Rutina.create(nuevaRutina);
-        if(!rutinaGuardada.ejercicios || rutinaGuardada.ejercicios.length === 0) {
-            throw new Error("El Administrador tiene que generar esta rutina manualmente");
-        }
-        return rutinaGuardada.populate("idActividad", "nombre descripcion -_id");
+    ejercicios,
+    actividad,
+    objetivo,
+    usuario: idUsuario
+    };
+    
+    const rutinaGuardada = await Rutina.create(nuevaRutina);
+    return rutinaGuardada.populate("actividad", "nombre descripcion -_id");
 }
 
 // Función para generar ejercicios utilizando IA
-const generarRutinaConIA = async (idActividad, objetivo) => {
+const generarRutinaConIA = async (actividad, objetivo) => {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const a = await Actividad.findById(idActividad);
+    const a = await Actividad.findById(actividad);
     const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash-lite",
         systemInstruction:
@@ -62,7 +69,7 @@ const obtenerRutinasPorUsuario = async (idUsuario) => {
         if (!usuario) {
             throw new UsuarioNoEncontradoError();
         }
-        return await Rutina.find({ idUsuario }).populate("idActividad", "nombre descripcion -_id");
+        return await Rutina.find({ usuario: idUsuario }).populate("actividad", "nombre descripcion -_id").populate("usuario", "email -_id")
     } catch (e) {
         throw e;
     }
@@ -71,9 +78,8 @@ const obtenerRutinasPorUsuario = async (idUsuario) => {
 //Obtener Rutinas
 const obtenerTodasLasRutinas = async () => {
     try {
-        return await Rutina.find({});
+        return await Rutina.find({}).populate("actividad", "nombre descripcion -_id").populate("usuario", "email")
     } catch (e) {
-        console.log("Error al obtener las rutinas", e);
         throw new Error("Error obteniendo las rutinas");
     }
 }
@@ -81,7 +87,7 @@ const obtenerTodasLasRutinas = async () => {
 //Obtener Rutina por ID
 const obtenerRutinaPorSuId = async (idRutina) => {
     try {
-        const rutina = await Rutina.findOne({ _id: idRutina })
+        const rutina = await Rutina.findOne({ _id: idRutina }).populate("actividad", "nombre descripcion -_id").populate("usuario", "email")
         if (rutina) {
             return rutina
         }
@@ -91,4 +97,5 @@ const obtenerRutinaPorSuId = async (idRutina) => {
     }
 }
 
-export { crearRutinaService, obtenerTodasLasRutinas, obtenerRutinaPorSuId }
+
+export { crearRutinaService, obtenerTodasLasRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario }

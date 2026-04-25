@@ -49,9 +49,8 @@ const inscribirUsuario = async (req, res) => {
     const idUsuario = req.idUsu;
     try {
         const claseConInscripcion = await claseService.inscribirUsuario(idClase, idUsuario)
-        const email = await claseService.mandarMail(idUsuario, idClase);
+        await enviarMail(idUsuario, idClase);
         res.status(200).json(claseConInscripcion);
-
     } catch (e) {
         res.status(e.code || 500).json({ message: e.message })
     }
@@ -80,18 +79,13 @@ const limpiarUsuarioDeClasesPorDia= async(req, res) =>{
     }
 }
 
-
-//Mandar Mail
-/*const mandarEmail = async(req,res)=> {
-    const idClase = req.params.idClase
-    const idUsuario = req.idUsu;
+//Notificaion por mail 
+const enviarMail = async (idUsuario, idClase) => {
     try {
-        const email = await claseService.mandarMail(idClase,idUsuario);
-        res.status(200).json(email)
-    } catch (e) {
-        res.status(500).json({ message: e.message })
+        await claseService.mandarMail(idUsuario, idClase);
+    } catch (mailError) {
+        console.error("Error al enviar mail de confirmacion:", mailError.message || mailError);
     }
+}
 
-}*/
-
-export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, /*mandarEmail*/ }
+export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia}
