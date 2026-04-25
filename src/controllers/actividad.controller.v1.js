@@ -14,7 +14,7 @@ const crearActividad = async (req, res) => {
 const obtenerActividades = async (req, res) => {
     try {
         const actividades = await actividadService.obtenerTodasLasActividades();
-        res.status(200).json(notas)
+        res.status(200).json(actividades)
     } catch (e) {
         res.status(500).json({ message: e.message })
     }

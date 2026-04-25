@@ -22,7 +22,7 @@ const validarLimiteRutinasPlanPlus = async (idUsuario) => {
     const usuario = await Usuario.findById(idUsuario);
 
     if (usuario.plan === "plus") {
-        const cantidadRutinas = await Rutina.countDocuments({ idUsuario: idUsuario });
+        const cantidadRutinas = await Rutina.countDocuments({ usuario: idUsuario });
 
         if (cantidadRutinas >= 4) {
             throw new PlanPlusRutinaError();

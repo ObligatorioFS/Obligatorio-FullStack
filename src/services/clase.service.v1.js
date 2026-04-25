@@ -12,23 +12,22 @@ import { Clase } from "../modelos/clase.model.js";
 import { Sala } from "../modelos/sala.model.js";
 import { Usuario } from "../modelos/user.model.js";
 import { validarLimiteClasesPlanPlus } from "./validations.service.v1.js";
-
 import  'dotenv/config' ; 
 import  {  MailerSend ,  EmailParams ,  Sender ,  Recipient  }  from  "mailersend" ;
 
 
 //Crear Clase
-const crearClase = async ({descripcion, dia, hora, capacidadMax, idSala, idActividad}) => {
+const crearClase = async ({descripcion, dia, hora, capacidadMax, sala, actividad}) => {
     
-    await validarDatosCrearClase({ dia, hora, capacidadMax, idSala});
+    await validarDatosCrearClase({ descripcion, dia, hora, capacidadMax, sala, actividad});
 
     const nuevaClase ={
         descripcion,
         dia,
         hora,
         capacidadMax,
-        idActividad,
-        idSala
+        actividad,
+        sala
     }
     const claseGuardada = await Clase.create(nuevaClase)
     return claseGuardada;
@@ -37,9 +36,8 @@ const crearClase = async ({descripcion, dia, hora, capacidadMax, idSala, idActiv
 //Obtener Clases
 const obtenerTodasLasClases = async () => {
     try {
-        return await Clase.find({});
+        return await Clase.find({}).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id").populate("inscriptos", "nombre email -_id");
     } catch (e) {
-        console.log("Error al obtener salas", e);
         throw new Error("Error obteniendo las salas");
     }
 }
@@ -47,7 +45,7 @@ const obtenerTodasLasClases = async () => {
 //Obtener Clase por ID
 const obtenerClasePorSuId = async (idClase) => {
     try {
-        const clase = await Clase.findOne({ _id: idClase})
+        const clase = await Clase.findOne({ _id: idClase}).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id").populate("inscriptos", "nombre email -_id");
         if (clase) {
             return clase
         }
@@ -60,9 +58,8 @@ const obtenerClasePorSuId = async (idClase) => {
 //Obtener Clases por UsuarioId
 const obtenerClasesDelUsuario = async idUsuario => {
     try {
-        return await Clase.find({ inscriptos: idUsuario })
+        return await Clase.find({ inscriptos: idUsuario }).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id")
     } catch (e) {
-        console.log("Error al obtener las clases del Usuario", e)
         throw new Error("Error obteniendo las clases del usuario")
     }
 }
@@ -87,7 +84,6 @@ const removerUsuarioDeInscriptos = async (idClase, idUsuario) => {
         inscripto => inscripto.toString() !== idUsuario
     );
     await clase.save();
-
     return clase;
 }
 
@@ -122,26 +118,26 @@ const validarInscripcion = async (idClase, idUsuario) => {
 }
 
 //Validacion Crear Clase
-const validarDatosCrearClase = async ({descripcion, dia, hora, capacidadMax, idSala, idActividad }) => {
+const validarDatosCrearClase = async ({descripcion, dia, hora, capacidadMax, sala, actividad }) => {
    //Validar que la descripcion ne sea vacia o nula
     if (!descripcion || descripcion.trim() === "") {
         throw new DescripcionVaciaError();
     }
    //Busco Actividad - Si no existe, Error.
-   const actividad = await Actividad.findById(idActividad);
-    if (!actividad) {
+   const actividadEncontrada = await Actividad.findById(actividad);
+    if (!actividadEncontrada) {
         throw new ActividadNoEncontradaError();
     }
     //Busco Sala - Si no existe o la capacidad es menor, Error.
-   const sala = await Sala.findById(idSala);
-   if(!sala){
+   const salaEncontrada = await Sala.findById(sala);
+   if(!salaEncontrada){
        throw new SalaNoEncontrada();
    }
-   if(capacidadMax > sala.capacidadMax){
+   if(capacidadMax > salaEncontrada.capacidadMax){
        throw new CapacidadSuperadaError();
    }
     //Busco si ya existe una clase en esa Sala, Dia y Hora
-    const existeClase = await Clase.findOne({ dia, hora, idSala});
+    const existeClase = await Clase.findOne({ dia, hora, sala});
     if (existeClase) {
     throw new ClaseYaExisteError();
     }
@@ -166,10 +162,10 @@ const validarRemoverInscripcion = async (idClase, idUsuario) => {
 }
 
 //Limpiar Inscriptos de las Clases de un dia
-const limpiarUsuarioDeClasesPorDia = async (dia) => {
+const limpiarUsuarioDeClasesPorDia = async (body) => {
     try {
-    //buscarclases
-    const clases = await Clase.find({ dia })
+    const dia = body.dia;
+    const clases = await Clase.find({ dia });
     //recorrerlas y limpiar inscriptos
     for (const clase of clases) {
         clase.inscriptos = []; 
@@ -185,15 +181,17 @@ const limpiarUsuarioDeClasesPorDia = async (dia) => {
 //Mandar Mail
 const mandarMail = async (idUsuario, idClase) => {
     try {
-        const clase = await Clase.findById(idClase);
+        const clase = await Clase.findById(idClase).populate("actividad");
         const usuario = await Usuario.findById(idUsuario);
-        //const actividad = await Actividad.findById(clase.idActividad);
         
         if (!usuario) {
             throw new UsuarioNoEncontradoError();
         }
         if (!clase) {
             throw new ClaseNoEncontrada();
+        }
+        if (!clase.actividad) {
+            throw new ActividadNoEncontradaError();
         }
         
         const mailerSend = new MailerSend({   
@@ -224,9 +222,8 @@ const mandarMail = async (idUsuario, idClase) => {
         
         const resultado = await mailerSend.email.send(emailParams);
         return resultado;
-    } catch (error) {
-        console.error("Error al enviar email:", error);
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }
-export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, mandarMail}
+export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, mandarMail, limpiarUsuarioDeClasesPorDia}

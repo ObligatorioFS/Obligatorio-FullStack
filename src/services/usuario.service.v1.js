@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken"
 import { usuarioDto } from "../dtos/usuario.dto.js"
 import { Usuario } from "../modelos/user.model.js"
+import { CambiarPlanError } from "../errors/usuarioErrors/CambiarPlanError.js"
 import { UsuarioNoEncontradoError } from "../errors/usuarioErrors/UsuarioNoEncontrado.js"
 
 
@@ -16,7 +17,7 @@ const modificarPlanUsuario = async (idUsuario) => {
             return await generarToken(usuario);
         }
         else{
-            throw new Error("El usuario ya tiene el plan premium");
+            throw new CambiarPlanError();
         }
     }catch (e) {
         throw e;
