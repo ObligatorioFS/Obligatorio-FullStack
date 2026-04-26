@@ -88,4 +88,21 @@ const enviarMail = async (idUsuario, idClase) => {
     }
 }
 
-export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia}
+const subirImagen = async (req, res) => {
+    const img = req.file;
+    const idClase = req.params.id;
+    if(!img){
+        return res.status(400).json({ message: "No se envio una imagen" });
+    }
+    if(!img.mimetype.startsWith("image/")){
+        return res.status(400).json({ message: "Debe ser un archivo de imagen" });
+    }
+    try {
+        await claseService.agregarImagen(idClase, img);
+        res.status(200).json({ message: "Imagen subida con exito"});
+    } catch (e) {
+        res.status(e.code || 500).json({ message: e.message })
+    }
+}
+
+export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia, subirImagen}

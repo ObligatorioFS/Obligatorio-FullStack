@@ -7,7 +7,8 @@ const claseSchema = new mongoose.Schema({
     capacidadMax: { type: Number, required: true, min: 1},
     actividad: { type: mongoose.Schema.Types.ObjectId, ref: "Actividad", required: true},
     sala:   { type: mongoose.Schema.Types.ObjectId, ref: "Sala", required: true},
-    inscriptos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Usuario"}]
+    inscriptos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Usuario"}],
+    imagenURL: { type: String }
 }, {
     timestamps: true,
     collection: "clases"

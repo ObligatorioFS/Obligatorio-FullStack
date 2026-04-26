@@ -14,6 +14,7 @@ import { Usuario } from "../modelos/user.model.js";
 import { validarLimiteClasesPlanPlus } from "./validations.service.v1.js";
 import  'dotenv/config' ; 
 import  {  MailerSend ,  EmailParams ,  Sender ,  Recipient  }  from  "mailersend" ;
+import cloudinary from "cloudinary";
 
 
 //Crear Clase
@@ -143,6 +144,32 @@ const validarDatosCrearClase = async ({descripcion, dia, hora, capacidadMax, sal
     }
 };
 
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+//Agregar Imagen a Clase
+const agregarImagen = async (idClase, img) => {
+    const clase = await Clase.findById(idClase);
+    if (!clase) {
+        throw new ClaseNoEncontrada();
+    }
+    // Subir imagen a Cloudinary
+    const imgBase64 = Buffer.from(img.buffer).toString('base64');
+    const uri = `data:${img.mimetype};base64,${imgBase64}`;
+    let result;
+    try {
+        result = await cloudinary.uploader.upload(uri);
+    } catch (e) {
+        throw e
+    }
+
+    clase.imagenURL = result.secure_url
+    return await clase.save()
+}
+
 //Validacion para RemoverInscripcion
 const validarRemoverInscripcion = async (idClase, idUsuario) => {
 
@@ -176,7 +203,6 @@ const limpiarUsuarioDeClasesPorDia = async (body) => {
         throw e;
     }
 }
-
 
 //Mandar Mail
 const mandarMail = async (idUsuario, idClase) => {
@@ -226,4 +252,4 @@ const mandarMail = async (idUsuario, idClase) => {
         throw e;
     }
 }
-export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, mandarMail, limpiarUsuarioDeClasesPorDia}
+export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, mandarMail, limpiarUsuarioDeClasesPorDia, agregarImagen}
