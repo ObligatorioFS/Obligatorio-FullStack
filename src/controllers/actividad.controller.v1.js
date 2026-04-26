@@ -22,7 +22,7 @@ const obtenerActividades = async (req, res) => {
 
 //Obtener Actividad por ID
 const obtenerActividadPorSuId = async (req, res) => {
-    const idActividad = req.params.id
+    const idActividad = req.params.idActividad
     try {
         const actividad = await actividadService.obtenerActividadPorId(idActividad);
         res.status(200).json(actividad);
@@ -33,7 +33,7 @@ const obtenerActividadPorSuId = async (req, res) => {
 
 //Modificar Actividad
 const modificarActividad = async (req, res) => {
-    const idActividad = req.params.id
+    const idActividad = req.params.idActividad
     const body = req.body
 
     try {
@@ -45,8 +45,8 @@ const modificarActividad = async (req, res) => {
 }
 
 //Eliminar Actividad
-const elminarActividad = async (req, res) => {
-    const idActividad = req.params.id
+const eliminarActividad = async (req, res) => {
+    const idActividad = req.params.idActividad
     try {
         await actividadService.eliminarActividad(idActividad);
         res.status(204).send();
@@ -56,5 +56,5 @@ const elminarActividad = async (req, res) => {
 }
 
 
-export { crearActividad, modificarActividad, elminarActividad, obtenerActividadPorSuId, obtenerActividades }
+export { crearActividad, modificarActividad, eliminarActividad, obtenerActividadPorSuId, obtenerActividades }
 
