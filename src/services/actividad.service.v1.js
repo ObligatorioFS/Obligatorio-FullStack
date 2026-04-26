@@ -47,16 +47,16 @@ const obtenerActividadPorId = async (idActividad) => {
 };
 
 //Modificar Actividad
-const modificarActividad = async ({ idActividad, body }) => {
+const modificarActividad = async (idActividad, body) => {
    try{
-      const notaModificada = await Nota.findOneAndUpdate(
+      const actividadModificada = await Actividad.findOneAndUpdate(
         { _id: idActividad},
         body,
         { returnDocument: "after", runValidators: true }
     )
 
-    if (notaModificada) {
-        return notaModificada;
+    if (actividadModificada) {
+        return actividadModificada;
     }
        throw new ActividadNoEncontradaError();
    }catch(e){
@@ -67,8 +67,8 @@ const modificarActividad = async ({ idActividad, body }) => {
 //Eliminar Actividad
 const eliminarActividad = async (id) => {
     try {
-        const enClase = await Clase.findOne({ actividadId: id });
-        const enRutina = await Rutina.findOne({ actividadId: id });
+        const enClase = await Clase.findOne({ actividad: id });
+        const enRutina = await Rutina.findOne({ actividad: id });
         if (enClase || enRutina) throw new ActividadEnUsoError();
 
         const actividadEliminada = await Actividad.findByIdAndDelete(id);
