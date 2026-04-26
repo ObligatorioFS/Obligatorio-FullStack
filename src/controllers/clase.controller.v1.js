@@ -13,8 +13,13 @@ const crearClase = async (req, res) => {
 
 //Obtener todas las clases
 const obtenerClases = async (req, res) => {
-    try {
-        const clases = await claseService.obtenerTodasLasClases()
+      try {
+        const {limit, page, dia, idActividad } = req.query
+        if (!limit || !page) {
+            res.status(400).json({message: "debe enviar pagina y limite"})
+            return
+        }
+        const clases = await claseService.obtenerTodasLasClases(page, limit, dia, idActividad)
         res.status(200).json(clases)
     } catch (e) {
         res.status(500).json({ message: e.message })
@@ -79,6 +84,17 @@ const limpiarUsuarioDeClasesPorDia= async(req, res) =>{
     }
 }
 
+// Eliminar clase
+const eliminarClase = async (req, res) => {
+    const idClase = req.params.idClase;
+    try {
+        await claseService.eliminarClase(idClase);
+        res.status(200).json({ message: "Clase eliminada con exito" });
+    } catch (e) {
+        res.status(e.code || 500).json({ message: e.message });
+    }
+}
+
 //Notificaion por mail 
 const enviarMail = async (idUsuario, idClase) => {
     try {
@@ -90,7 +106,7 @@ const enviarMail = async (idUsuario, idClase) => {
 
 const subirImagen = async (req, res) => {
     const img = req.file;
-    const idClase = req.params.id;
+    const idClase = req.params.idClase;
     if(!img){
         return res.status(400).json({ message: "No se envio una imagen" });
     }
@@ -101,8 +117,10 @@ const subirImagen = async (req, res) => {
         await claseService.agregarImagen(idClase, img);
         res.status(200).json({ message: "Imagen subida con exito"});
     } catch (e) {
-        res.status(e.code || 500).json({ message: e.message })
+        res.status(e.code || e.http_code || 500).json({ message: e.message })
     }
 }
 
-export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia, subirImagen}
+
+
+export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia, subirImagen, eliminarClase}

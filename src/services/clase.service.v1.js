@@ -35,13 +35,56 @@ const crearClase = async ({descripcion, dia, hora, capacidadMax, sala, actividad
 }
 
 //Obtener Clases
-const obtenerTodasLasClases = async () => {
+const obtenerTodasLasClases = async (page, limit, dia, idActividad) => {
+    const query = {};
+    if(dia) {
+        query.dia = dia
+    }
+    
+    if(idActividad) {
+        query.actividad = idActividad
+    }
+
+    const total = await Clase.countDocuments(query)
+    page = Number(page)
+    limit = Number(limit)
+    const skip = (page - 1) * limit //0
+    //total: 10 
+    //vamos de a 5
     try {
-        return await Clase.find({}).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id").populate("inscriptos", "nombre email -_id");
+        const clases = await Clase.find(query).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id").populate("inscriptos", "nombre email -_id")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+        return { clases, limit, total, totalPaginas: Math.ceil(total/limit) }
     } catch (e) {
-        throw new Error("Error obteniendo las salas");
+        console.log("error al obtener clases", e)
+        throw new Error("error obteniendo las clases")
     }
 }
+
+/*
+    const total = await Nota.countDocuments(query)
+    page = Number(page)
+    limit = Number(limit)
+    const skip = (page - 1) * limit //0
+    //total: 10 
+    //vamos de a 5
+
+    
+    try {
+        const notas = await Nota.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+        return { notas, limit, total, totalPaginas: Math.ceil(total/limit) }
+    } catch (e) {
+        console.log("error al obtener notas de usaurio", e)
+        throw new Error("error obteniendo las notas del usuario")
+    }
+ */
 
 //Obtener Clase por ID
 const obtenerClasePorSuId = async (idClase) => {
@@ -204,6 +247,18 @@ const limpiarUsuarioDeClasesPorDia = async (body) => {
     }
 }
 
+// Eliminar Clase
+const eliminarClase = async (idClase) => {
+    try {
+        const clase = await Clase.findById(idClase);
+        if (!clase) throw new ClaseNoEncontrada();
+        if(clase.inscriptos.length > 0) throw new Error("No se puede eliminar una clase con inscriptos")
+        await Clase.findByIdAndDelete(idClase);
+    } catch (e) {
+        throw e;
+    }
+}
+
 //Mandar Mail
 const mandarMail = async (idUsuario, idClase) => {
     try {
@@ -252,4 +307,4 @@ const mandarMail = async (idUsuario, idClase) => {
         throw e;
     }
 }
-export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, mandarMail, limpiarUsuarioDeClasesPorDia, agregarImagen}
+export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, mandarMail, limpiarUsuarioDeClasesPorDia, agregarImagen, eliminarClase}

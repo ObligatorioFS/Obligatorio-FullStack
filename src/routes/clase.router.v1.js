@@ -1,5 +1,5 @@
 import express from "express"
-import { crearClase, inscribirUsuario, limpiarUsuarioDeClasesPorDia, obtenerClasePorSuId, obtenerClases, obtenerClasesDelUsuario, removerUsuarioDeInscriptos, subirImagen } from "../controllers/clase.controller.v1.js"
+import { crearClase, inscribirUsuario, limpiarUsuarioDeClasesPorDia, obtenerClasePorSuId, obtenerClases, obtenerClasesDelUsuario, removerUsuarioDeInscriptos, subirImagen, eliminarClase } from "../controllers/clase.controller.v1.js"
 import { soloAdminMiddleware } from "../middlewares/auth.middleware.js";
 import { crearClaseValidatorSchemaMiddleware } from "../middlewares/crear.clase.validator.middleware.js";
 import multer from "multer";
@@ -19,7 +19,9 @@ claseRouterV1.get("/clases/:id", obtenerClasePorSuId)
 claseRouterV1.put("/clases/remover-inscripciones-del-dia", soloAdminMiddleware, limpiarUsuarioDeClasesPorDia)
 claseRouterV1.put("/clases/:idClase/inscribir-usuario", inscribirUsuario)
 claseRouterV1.put("/clases/:idClase/remover-inscripcion", removerUsuarioDeInscriptos)
-claseRouterV1.put("/clases/:idClase/imagen",soloAdminMiddleware, upload.single("img"), subirImagen)
+claseRouterV1.put("/clases/:idClase/imagen", soloAdminMiddleware, upload.single("img"), subirImagen)
+// Delete
+claseRouterV1.delete("/clases/:idClase", soloAdminMiddleware, eliminarClase)
 
 
 //Borrar - Eliminar Clase: Verificar si tiene inscriptos

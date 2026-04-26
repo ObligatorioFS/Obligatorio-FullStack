@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import { usuarioDto } from "../dtos/usuario.dto.js"
 import { Usuario } from "../modelos/user.model.js"
 import { UsuarioYaExistenteError } from "../errors/usuarioErrors/UsuarioYaExistenteError.js"
+import { AuthError } from "../errors/usuarioErrors/AuthError.js"
 
 
 
@@ -25,7 +26,7 @@ const doLogin = async ({ email, password }) => {
         }
     }
 
-    throw new Error("no autorizado");
+    throw new AuthError();
 }
 
 const registrarUsuario = async ({ nombre, apellido, password, email }) => {
