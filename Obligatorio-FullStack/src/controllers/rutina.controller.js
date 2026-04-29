@@ -43,6 +43,16 @@ const obtenerRutinaPorSuId = async (req, res) => {
     }
 }
 
+//Agregar ejercicios a la rutina
+const agregarEjerciciosARutina = async (req, res) => {
+    const idRutina = req.params.id;
+    const ejercicios = req.body;
+        try {        
+        const rutinaConEjercicios = await rutinaService.agregarEjerciciosARutina(idRutina, ejercicios);
+        res.status(200).json(rutinaConEjercicios);
+    } catch (e) {
+        res.status(e.code || 500).json({ message: e.message })
+    }
+}
 
-
-export { crearRutinaController, obtenerRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario }
+export { crearRutinaController, obtenerRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario, agregarEjerciciosARutina}

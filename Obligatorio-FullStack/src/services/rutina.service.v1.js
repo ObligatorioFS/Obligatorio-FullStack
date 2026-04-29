@@ -98,4 +98,18 @@ const obtenerRutinaPorSuId = async (idRutina) => {
 }
 
 
-export { crearRutinaService, obtenerTodasLasRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario }
+//Agregar ejercicios a la rutina
+const agregarEjerciciosARutina = async (idRutina, ejercicios) => {
+    try{
+    const rutina = await Rutina.findOne({ _id: idRutina })
+    if(!rutina) throw new RutinaNoEncontrada();
+    rutina.ejercicios = ejercicios;
+    await rutina.save();
+    return rutina;
+    }catch(e){
+       e;
+    }
+}
+
+
+export { crearRutinaService, obtenerTodasLasRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario, agregarEjerciciosARutina }

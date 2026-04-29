@@ -1,5 +1,5 @@
 import express from "express"
-import { crearRutinaController, obtenerRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario } from "../controllers/rutina.controller.js"
+import { crearRutinaController, obtenerRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario, agregarEjerciciosARutina } from "../controllers/rutina.controller.js"
 import { crearRutinaValidatorSchemaMiddleware } from "../middlewares/crear.rutina.validator.middeleare.js";
 import { soloAdminMiddleware } from "../middlewares/auth.middleware.js";
 
@@ -14,6 +14,8 @@ rutinaRouterV1.post("/rutinas", crearRutinaValidatorSchemaMiddleware, crearRutin
 rutinaRouterV1.get("/rutinas", soloAdminMiddleware,  obtenerRutinas)
 rutinaRouterV1.get("/rutinas/rutinas-usuario", obtenerRutinasPorUsuario)
 rutinaRouterV1.get("/rutinas/:id", obtenerRutinaPorSuId)
+//Modificar
+rutinaRouterV1.put("/rutinas/:id", soloAdminMiddleware, agregarEjerciciosARutina);
 
 
 export { rutinaRouterV1 }
