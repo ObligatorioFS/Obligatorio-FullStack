@@ -46,7 +46,7 @@ const obtenerRutinaPorSuId = async (req, res) => {
 //Agregar ejercicios a la rutina
 const agregarEjerciciosARutina = async (req, res) => {
     const idRutina = req.params.id;
-    const ejercicios = req.body;
+    const ejercicios = req.body.ejercicios;
         try {        
         const rutinaConEjercicios = await rutinaService.agregarEjerciciosARutina(idRutina, ejercicios);
         res.status(200).json(rutinaConEjercicios);
