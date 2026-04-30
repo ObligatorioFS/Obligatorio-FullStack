@@ -13,9 +13,8 @@ import { Sala } from "../modelos/sala.model.js";
 import { Usuario } from "../modelos/user.model.js";
 import { validarLimiteClasesPlanPlus } from "./validations.service.v1.js";
 import  'dotenv/config' ; 
-import  {  MailerSend ,  EmailParams ,  Sender ,  Recipient  }  from  "mailersend" ;
 import cloudinary from "cloudinary";
-
+import { BrevoClient } from "@getbrevo/brevo";
 
 //Crear Clase
 const crearClase = async ({descripcion, dia, hora, capacidadMax, sala, actividad}) => {
@@ -64,27 +63,6 @@ const obtenerTodasLasClases = async (page, limit, dia, idActividad) => {
     }
 }
 
-/*
-    const total = await Nota.countDocuments(query)
-    page = Number(page)
-    limit = Number(limit)
-    const skip = (page - 1) * limit //0
-    //total: 10 
-    //vamos de a 5
-
-    
-    try {
-        const notas = await Nota.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
-
-        return { notas, limit, total, totalPaginas: Math.ceil(total/limit) }
-    } catch (e) {
-        console.log("error al obtener notas de usaurio", e)
-        throw new Error("error obteniendo las notas del usuario")
-    }
- */
 
 //Obtener Clase por ID
 const obtenerClasePorSuId = async (idClase) => {
@@ -258,53 +236,59 @@ const eliminarClase = async (idClase) => {
         throw e;
     }
 }
+const getBrevoClient = () => new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY,
+});
 
-//Mandar Mail
-const mandarMail = async (idUsuario, idClase) => {
+const enviarEmailBrevo = async (idUsuario, idClase) => {
     try {
         const clase = await Clase.findById(idClase).populate("actividad");
         const usuario = await Usuario.findById(idUsuario);
+        console.log(usuario);
         
-        if (!usuario) {
-            throw new UsuarioNoEncontradoError();
+        if (!usuario){
+             throw new UsuarioNoEncontradoError();
         }
-        if (!clase) {
+        if (!clase){
             throw new ClaseNoEncontrada();
         }
-        if (!clase.actividad) {
+        if (!clase.actividad){
             throw new ActividadNoEncontradaError();
-        }
+        } 
         
-        const mailerSend = new MailerSend({   
-            apiKey: process.env.MAIL_SENDER_API_KEY
-        });
-        
-        const sentFrom = new Sender("noreply@test-zkq340ervr3gd796.mlsender.net", "Felipe Rossini");
-        
-        const destinatarios = [
-            new Recipient(usuario.email, usuario.nombre)
-        ];
-        
-        const emailParams = new EmailParams()
-            .setFrom(sentFrom)
-            .setTo(destinatarios) 
-            .setReplyTo(sentFrom)
-            .setSubject("Inscripción exitosa!")
-            .setHtml(`
-                <h2>¡Hola ${usuario.nombre}!</h2>
-                <p>Te confirmamos que te inscribiste correctamente a la clase:</p>
-                <p><strong>${clase.actividad.nombre}</strong></p>
-                <p>${clase.descripcion}</p>
-                <p>¡Te esperamos! 💪</p>
-            `)
-            .setText(
-                `Hola ${usuario.nombre}, te inscribiste correctamente a la clase ${clase.actividad.nombre}.`
-            );
-        
-        const resultado = await mailerSend.email.send(emailParams);
-        return resultado;
-    } catch (e) {
-        throw e;
-    }
-}
-export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, mandarMail, limpiarUsuarioDeClasesPorDia, agregarImagen, eliminarClase}
+        const client = getBrevoClient();
+        const senderEmail = "felirossini88@gmail.com";
+        const senderName = "Club";
+
+        return client.transactionalEmails.sendTransacEmail({
+      subject: "Inscripción confirmada",
+      sender: {
+        email: senderEmail,
+        name: senderName,
+      },
+      to: [
+        {
+          email: usuario.email,
+          name: usuario.nombre,
+        },
+      ],
+      htmlContent: `
+        <html>
+          <body>
+            <p>Hola ${usuario.nombre},</p>
+            <p>¡Gracias por inscribirte a la clase de <strong>${clase.actividad.nombre}</strong>!</p>
+            <p>Tu clase está programada para el día: <strong>${clase.dia}</strong>.</p>
+            <p>¡Te esperamos en el club!</p>
+          </body>
+        </html>
+      `,
+      textContent:  `Hola ${usuario.nombre},
+                    Gracias por inscribirte a la clase de ${clase.actividad.nombre}.
+                    Tu clase es el día: ${clase.dia}.
+                    ¡Te esperamos!`});
+      } catch (e) {
+          throw e;
+      }
+};
+
+export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, enviarEmailBrevo, limpiarUsuarioDeClasesPorDia, agregarImagen, eliminarClase}

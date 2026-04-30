@@ -54,7 +54,7 @@ const inscribirUsuario = async (req, res) => {
     const idUsuario = req.idUsu;
     try {
         const claseConInscripcion = await claseService.inscribirUsuario(idClase, idUsuario)
-        await enviarMail(idUsuario, idClase);
+        await claseService.enviarEmailBrevo(idUsuario, idClase);
         res.status(200).json(claseConInscripcion);
     } catch (e) {
         res.status(e.code || 500).json({ message: e.message })
@@ -96,13 +96,13 @@ const eliminarClase = async (req, res) => {
 }
 
 //Notificaion por mail 
-const enviarMail = async (idUsuario, idClase) => {
-    try {
-        await claseService.mandarMail(idUsuario, idClase);
+/*const enviarMail = async (idUsuario, idClase) => {
+    try { 
+        await claseService.enviarEmailBrevo(idUsuario, idClase);
     } catch (mailError) {
         console.error("Error al enviar mail de confirmacion:", mailError.message || mailError);
     }
-}
+}*/
 
 const subirImagen = async (req, res) => {
     const img = req.file;

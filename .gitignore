@@ -1,0 +1,9 @@
+node_modules/
+Obligatorio-FullStack/node_modules/
+
+.env
+Obligatorio-FullStack/.env
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
