@@ -10,6 +10,7 @@ import { claseRouterV1 } from './src/routes/clase.router.v1.js';
 import { rutinaRouterV1 } from './src/routes/rutina.router.v1.js';
 import { usuarioRouterV1 } from './src/routes/usuario.router.v1.js';
 import { actividadRouterv1 } from './src/routes/actividad.router.v1.js';
+import cors from 'cors';
 
 
 
@@ -18,6 +19,7 @@ import { actividadRouterv1 } from './src/routes/actividad.router.v1.js';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.use(logMiddleware)
