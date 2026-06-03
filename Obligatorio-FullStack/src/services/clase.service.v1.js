@@ -29,8 +29,14 @@ const crearClase = async ({descripcion, dia, hora, capacidadMax, sala, actividad
         actividad,
         sala
     }
-    const claseGuardada = await Clase.create(nuevaClase)
-    return claseGuardada;
+ const claseGuardada = await Clase.create(nuevaClase)
+
+  const clasePopulada = await Clase.findById(claseGuardada._id)
+    .populate("actividad", "nombre descripcion -_id")
+    .populate("sala", "nombre -_id")
+    .populate("inscriptos", "nombre email -_id")
+
+  return clasePopulada
 }
 
 //Obtener Clases
