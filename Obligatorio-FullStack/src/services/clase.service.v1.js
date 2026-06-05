@@ -92,6 +92,20 @@ const obtenerClasesDelUsuario = async idUsuario => {
     }
 }
 
+//Inscribir Usuario a Clase Admin
+const inscribirUsuarioAdmin = async (idClase, emailUsuario) => {
+    try {
+        const usuario = await Usuario.findOne({ email: emailUsuario })
+        if (!usuario) {
+            throw new UsuarioNoEncontradoError()
+        }
+        const claseConInscripcion = await inscribirUsuario(idClase, usuario._id.toString())
+        return { claseConInscripcion, idUsuario: usuario._id.toString() }
+    } catch (e) {
+        throw e
+    }
+}
+
 //Inscribir Usuario a Clase
 const inscribirUsuario = async (idClase, idUsuario) => {
 

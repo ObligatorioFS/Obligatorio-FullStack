@@ -49,6 +49,21 @@ const obtenerClasesDelUsuario = async (req, res) => {
     }
 }
 
+//Inscribir Usuario a Clase Admin
+const inscribirUsuarioAdmin = async (req, res) => {
+    const idClase = req.params.idClase
+    const emailUsuario = req.body.email
+    try {
+        const { claseConInscripcion, idUsuario } = await claseService.inscribirUsuarioAdmin(idClase, emailUsuario)
+        await claseService.enviarEmailBrevo(idUsuario, idClase)
+        res.status(200).json(claseConInscripcion)
+    } catch (e) {
+        res.status(e.code || 500).json({ message: e.message })
+    }
+}
+
+
+//Inscribir Usuario a Clase
 const inscribirUsuario = async (req, res) => {
     const idClase = req.params.idClase
     const idUsuario = req.idUsu;
