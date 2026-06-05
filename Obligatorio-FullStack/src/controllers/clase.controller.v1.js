@@ -138,4 +138,4 @@ const subirImagen = async (req, res) => {
 
 
 
-export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia, subirImagen, eliminarClase}
+export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia, subirImagen, eliminarClase, inscribirUsuarioAdmin }

@@ -311,4 +311,4 @@ const enviarEmailBrevo = async (idUsuario, idClase) => {
       }
 };
 
-export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, enviarEmailBrevo, limpiarUsuarioDeClasesPorDia, agregarImagen, eliminarClase}
+export { crearClase, obtenerTodasLasClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, enviarEmailBrevo, limpiarUsuarioDeClasesPorDia, agregarImagen, eliminarClase, inscribirUsuarioAdmin }
