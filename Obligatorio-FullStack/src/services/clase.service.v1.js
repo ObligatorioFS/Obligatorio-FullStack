@@ -57,7 +57,7 @@ const obtenerTodasLasClases = async (page, limit, dia, idActividad) => {
     //total: 10 
     //vamos de a 5
     try {
-        const clases = await Clase.find(query).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id").populate("inscriptos", "nombre email -_id")
+        const clases = await Clase.find(query).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id").populate("inscriptos", "nombre email _id")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -73,7 +73,7 @@ const obtenerTodasLasClases = async (page, limit, dia, idActividad) => {
 //Obtener Clase por ID
 const obtenerClasePorSuId = async (idClase) => {
     try {
-        const clase = await Clase.findOne({ _id: idClase}).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id").populate("inscriptos", "nombre email -_id");
+        const clase = await Clase.findOne({ _id: idClase}).populate("actividad", "nombre descripcion -_id").populate("sala", "nombre -_id").populate("inscriptos", "nombre email _id");
         if (clase) {
             return clase
         }
