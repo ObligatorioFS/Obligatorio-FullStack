@@ -75,10 +75,17 @@ const obtenerRutinasPorUsuario = async (idUsuario) => {
     }
 }
 
-//Obtener Rutinas
-const obtenerTodasLasRutinas = async () => {
+//Obtener Rutinas pendientes
+const obtenerTodasLasRutinasPendientes = async () => {
     try {
-        return await Rutina.find({}).populate("actividad", "nombre descripcion -_id").populate("usuario", "email")
+        return await Rutina.find({
+            $or: [
+                { ejercicios: { $exists: false } },
+                { ejercicios: { $size: 0 } }
+            ]
+        })
+            .populate("actividad", "nombre descripcion -_id")
+            .populate("usuario", "email")
     } catch (e) {
         throw new Error("Error obteniendo las rutinas");
     }
@@ -112,4 +119,4 @@ const agregarEjerciciosARutina = async (idRutina, ejercicios) => {
 }
 
 
-export { crearRutinaService, obtenerTodasLasRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario, agregarEjerciciosARutina }
+export { crearRutinaService, obtenerTodasLasRutinasPendientes, obtenerRutinaPorSuId, obtenerRutinasPorUsuario, agregarEjerciciosARutina }

@@ -11,9 +11,9 @@ const crearRutinaController = async (req, res) => {
     }
 }
 //Obtener Rutinas
-const obtenerRutinas = async (req, res) => {
+const obtenerRutinasPenientes = async (req, res) => {
     try {
-        const notas = await rutinaService.obtenerTodasLasRutinas()
+        const notas = await rutinaService.obtenerTodasLasRutinasPendientes()
         res.status(200).json(notas)
     } catch (e) {
         res.status(e.code || 500).json({ message: e.message })
@@ -55,4 +55,4 @@ const agregarEjerciciosARutina = async (req, res) => {
     }
 }
 
-export { crearRutinaController, obtenerRutinas, obtenerRutinaPorSuId, obtenerRutinasPorUsuario, agregarEjerciciosARutina}
+export { crearRutinaController, obtenerRutinasPendientes, obtenerRutinaPorSuId, obtenerRutinasPorUsuario, agregarEjerciciosARutina }
