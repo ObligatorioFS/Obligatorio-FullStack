@@ -10,8 +10,8 @@ const crearRutinaController = async (req, res) => {
         res.status(e.code || 500).json({ message: e.message });
     }
 }
-//Obtener Rutinas
-const obtenerRutinasPenientes = async (req, res) => {
+//Obtener Rutinas pendientes
+const obtenerRutinasPendientes = async (req, res) => {
     try {
         const notas = await rutinaService.obtenerTodasLasRutinasPendientes()
         res.status(200).json(notas)
