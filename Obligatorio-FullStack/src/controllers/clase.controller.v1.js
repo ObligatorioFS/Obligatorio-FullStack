@@ -88,6 +88,18 @@ const removerUsuarioDeInscriptos = async (req, res) => {
     }
 }
 
+// Remover Usuario de Inscripto Admin
+const removerInscripcionAdmin = async (req, res) => {
+    const idClase = req.params.idClase
+    const idUsuario = req.body.idUsuario
+
+    try {
+        const clase = await claseService.removerUsuarioDeInscriptos(idClase, idUsuario)
+        res.status(200).json(clase)
+    } catch (e) {
+        res.status(e.code || 500).json({ message: e.message })
+    }
+}
 //Limpiar Inscriptos de Clases por Dia
 const limpiarUsuarioDeClasesPorDia= async(req, res) =>{
     const dia = req.body;
@@ -138,4 +150,4 @@ const subirImagen = async (req, res) => {
 
 
 
-export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia, subirImagen, eliminarClase, inscribirUsuarioAdmin }
+export { crearClase, obtenerClases, obtenerClasePorSuId, obtenerClasesDelUsuario, inscribirUsuario, removerUsuarioDeInscriptos, limpiarUsuarioDeClasesPorDia, subirImagen, eliminarClase, inscribirUsuarioAdmin, removerInscripcionAdmin }
