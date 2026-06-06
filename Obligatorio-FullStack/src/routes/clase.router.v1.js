@@ -7,7 +7,7 @@ import multer from "multer";
 
 const claseRouterV1 = express.Router();
 const upload = multer()
-
+//PUSH
 
 //Crear
 claseRouterV1.post("/clases", soloAdminMiddleware, crearClaseValidatorSchemaMiddleware, crearClase);
