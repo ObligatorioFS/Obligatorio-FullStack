@@ -10,6 +10,7 @@ import { claseRouterV1 } from './src/routes/clase.router.v1.js';
 import { rutinaRouterV1 } from './src/routes/rutina.router.v1.js';
 import { usuarioRouterV1 } from './src/routes/usuario.router.v1.js';
 import { actividadRouterv1 } from './src/routes/actividad.router.v1.js';
+import { estadisticasRouterV1 } from './src/routes/estadistica.router.v1.js';
 import cors from 'cors';
 
 
@@ -40,6 +41,8 @@ app.use("/v1", rutinaRouterV1)
 app.use("/v1", usuarioRouterV1)
 //Actividades Router:
 app.use("/v1", actividadRouterv1)
+//Estadisticas Router:
+app.use("/v1", estadisticasRouterV1)
 
 conectarBD();
 
