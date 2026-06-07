@@ -4,7 +4,6 @@ import { usuarioDto } from "../dtos/usuario.dto.js"
 import { Usuario } from "../modelos/user.model.js"
 import { UsuarioYaExistenteError } from "../errors/usuarioErrors/UsuarioYaExistenteError.js"
 import { AuthError } from "../errors/usuarioErrors/AuthError.js"
-import { use } from "react"
 
 
 
@@ -63,5 +62,3 @@ const registrarUsuario = async ({ nombre, apellido, password, email }) => {
 
 
 export { doLogin, registrarUsuario }
-
- 
