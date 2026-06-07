@@ -131,11 +131,11 @@ const obtenerEstadisticasCliente = async (idUsuario) => {
         const clasesUsadas = clasesInscriptas.length
 
         const cuposRestantes = limitePlan === null
-            ? "Ilimitado"
+            ? "∞"
             : Math.max(limitePlan - clasesUsadas, 0)
 
         const porcentajePlanUsado = limitePlan === null
-            ? 100
+            ? null
             : Math.round((clasesUsadas / limitePlan) * 100)
 
         const proximaClase = obtenerProximaClase(clasesInscriptas)
@@ -143,6 +143,7 @@ const obtenerEstadisticasCliente = async (idUsuario) => {
         return {
             plan: usuario.plan,
             clasesInscriptas: clasesUsadas,
+            limitePlan,
             cuposRestantes,
             porcentajePlanUsado,
             proximaClase,
