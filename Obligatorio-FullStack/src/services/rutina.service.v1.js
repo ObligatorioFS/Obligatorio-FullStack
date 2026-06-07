@@ -25,7 +25,7 @@ const crearRutinaService = async ({ actividad, objetivo }, idUsuario) => {
     try {
     ejercicios = await generarRutinaConIA(actividad, objetivo);
     } catch (e) {
-     ejercicios = ["El Administrador tiene que generar esta rutina manualmente"];
+     throw new Error("El administrador le va a generar una rutina adecuada, aguarde un momento y revise sus rutinas en unos minutos");
     }
 
     const nuevaRutina = {
