@@ -100,4 +100,95 @@ const obtenerEstadisticasAdmin = async () => {
   }
 }
 
-export  { obtenerEstadisticasAdmin }
+const obtenerEstadisticasCliente = async (idUsuario) => {
+    try {
+        const usuario = await Usuario.findById(idUsuario)
+
+        if (!usuario) {
+            throw new UsuarioNoEncontradoError()
+        }
+
+        const clasesInscriptas = await Clase.find({
+            inscriptos: idUsuario
+        })
+            .populate("actividad", "nombre descripcion")
+            .populate("sala", "nombre")
+            .sort({ dia: 1, hora: 1 })
+
+        const rutinas = await Rutina.find({
+            usuario: idUsuario
+        }).populate("actividad", "nombre descripcion")
+
+        const rutinasAsignadas = rutinas.filter(rutina =>
+            rutina.ejercicios && rutina.ejercicios.length > 0
+        ).length
+
+        const rutinasPendientes = rutinas.filter(rutina =>
+            !rutina.ejercicios || rutina.ejercicios.length === 0
+        ).length
+
+        const limitePlan = usuario.plan === "premium" ? null : 5
+        const clasesUsadas = clasesInscriptas.length
+
+        const cuposRestantes = limitePlan === null
+            ? "Ilimitado"
+            : Math.max(limitePlan - clasesUsadas, 0)
+
+        const porcentajePlanUsado = limitePlan === null
+            ? 100
+            : Math.round((clasesUsadas / limitePlan) * 100)
+
+        const proximaClase = obtenerProximaClase(clasesInscriptas)
+
+        return {
+            plan: usuario.plan,
+            clasesInscriptas: clasesUsadas,
+            cuposRestantes,
+            porcentajePlanUsado,
+            proximaClase,
+            rutinasAsignadas,
+            rutinasPendientes
+        }
+    } catch (e) {
+        throw e
+    }
+}
+
+const obtenerProximaClase = (clases) => {
+    if (!clases || clases.length === 0) {
+        return null
+    }
+
+    const ordenDias = {
+        lunes: 1,
+        martes: 2,
+        miercoles: 3,
+        jueves: 4,
+        viernes: 5,
+        sabado: 6
+    }
+
+    const clasesOrdenadas = [...clases].sort((a, b) => {
+        const diaA = ordenDias[a.dia] || 99
+        const diaB = ordenDias[b.dia] || 99
+
+        if (diaA !== diaB) {
+            return diaA - diaB
+        }
+
+        return a.hora.localeCompare(b.hora)
+    })
+
+    const clase = clasesOrdenadas[0]
+
+    return {
+        id: clase._id,
+        dia: clase.dia,
+        hora: clase.hora,
+        actividad: clase.actividad?.nombre,
+        sala: clase.sala?.nombre,
+        cupos: `${clase.inscriptos.length} / ${clase.capacidadMax}`
+    }
+}
+
+export  { obtenerEstadisticasAdmin, obtenerEstadisticasCliente }
