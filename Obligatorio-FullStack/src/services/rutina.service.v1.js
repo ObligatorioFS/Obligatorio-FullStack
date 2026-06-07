@@ -51,8 +51,6 @@ const crearRutinaService = async ({ actividad, objetivo }, idUsuario) => {
 
 // Función para generar ejercicios utilizando IA
 const generarRutinaConIA = async (actividad, objetivo) => {
-    throw new Error("Error al solicitar la rutina a la API de IA");
-    /*
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const a = await Actividad.findById(actividad);
     const model = genAI.getGenerativeModel({
@@ -71,7 +69,7 @@ const generarRutinaConIA = async (actividad, objetivo) => {
         return ejercicios;
     } catch (e) {
         throw e;
-    }*/
+    }
 }
 
 // Obtener Rutinas por Usuario
