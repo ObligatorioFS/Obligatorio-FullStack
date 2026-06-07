@@ -20,7 +20,7 @@ const obtenerRutinasPendientes = async (req, res) => {
     }
 }
 
-//Obtener Rutinas por UsuarioId
+//Obtener Rutinas por UsuarioId a
 const obtenerRutinasPorUsuario = async (req, res) => {
     const idUsuario = req.idUsu;
     try {
