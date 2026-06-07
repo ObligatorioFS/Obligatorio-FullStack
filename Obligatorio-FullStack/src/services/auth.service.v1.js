@@ -4,6 +4,7 @@ import { usuarioDto } from "../dtos/usuario.dto.js"
 import { Usuario } from "../modelos/user.model.js"
 import { UsuarioYaExistenteError } from "../errors/usuarioErrors/UsuarioYaExistenteError.js"
 import { AuthError } from "../errors/usuarioErrors/AuthError.js"
+import { use } from "react"
 
 
 
@@ -22,7 +23,9 @@ const doLogin = async ({ email, password }) => {
                 { expiresIn: "1h" }
             )
             //return {token: token}
-            return { token }
+            return { token,
+              usuario: usuarioDto(u)  
+             }
         }
     }
 
@@ -50,7 +53,7 @@ const registrarUsuario = async ({ nombre, apellido, password, email }) => {
                     process.env.JWT_SECRET_KEY,
                     { expiresIn: "1h" }
                 )
-        return { token };
+        return { token, usuario: usuarioDto(u) };
     } catch (e) {
         console.log("Error registrando usuario", e);
         throw e;
