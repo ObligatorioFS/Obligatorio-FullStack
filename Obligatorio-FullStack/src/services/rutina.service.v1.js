@@ -22,21 +22,31 @@ const crearRutinaService = async ({ actividad, objetivo }, idUsuario) => {
         throw new ActividadNoEncontradaError();
     }
     let ejercicios = [];
+    let mensaje = null;
     try {
-    ejercicios = await generarRutinaConIA(actividad, objetivo);
+        ejercicios = await generarRutinaConIA(actividad, objetivo);
     } catch (e) {
-     throw new Error("El administrador le va a generar una rutina adecuada, aguarde un momento y revise sus rutinas en unos minutos");
+        mensaje = "El administrador le va a generar una rutina adecuada, aguarde un momento y revise sus rutinas en unos minutos";
     }
 
     const nuevaRutina = {
-    ejercicios,
-    actividad,
-    objetivo,
-    usuario: idUsuario
+        ejercicios,
+        actividad,
+        objetivo,
+        usuario: idUsuario
     };
     
     const rutinaGuardada = await Rutina.create(nuevaRutina);
-    return rutinaGuardada.populate("actividad", "nombre descripcion -_id");
+    const rutinaPopulada = await rutinaGuardada.populate("actividad", "nombre descripcion -_id");
+
+    if (mensaje) {
+        return {
+            rutina: rutinaPopulada,
+            message: mensaje
+        };
+    }
+
+    return rutinaPopulada;
 }
 
 // Función para generar ejercicios utilizando IA
