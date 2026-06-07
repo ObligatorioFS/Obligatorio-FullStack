@@ -127,7 +127,7 @@ const obtenerEstadisticasCliente = async (idUsuario) => {
             !rutina.ejercicios || rutina.ejercicios.length === 0
         ).length
 
-        const limitePlan = usuario.plan === "premium" ? null : 5
+        const limitePlan = usuario.plan === "premium" ? null : 4
         const clasesUsadas = clasesInscriptas.length
 
         const cuposRestantes = limitePlan === null
